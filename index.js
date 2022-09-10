@@ -4,7 +4,7 @@ const consoleTable = require('console.table');
 const fs = require('fs');
 const dbConnection = require('./db/connection');
 
-
+//Function to display the Start Menu
 function showMenu() {
     inquirer.prompt([
         {
@@ -47,6 +47,7 @@ function showMenu() {
     });
 }
 
+//Functions to view all departments, roles and employees
 function viewDepartments() {
     dbConnection.query('SELECT * from department ORDER BY id ASC', (err, results) => {
         if (err) { throw err }
@@ -84,6 +85,7 @@ function viewEmployees() {
         })
 };
 
+//Functions to add a department, a role and an employee
 function addDepartment() {
     inquirer.prompt([
         {
@@ -200,6 +202,7 @@ function addEmployee() {
         })
     })
 };
+//Function to update an employee's role 
 function updateRole() {
     dbConnection.query('SELECT * FROM employee', (err, results) => {
         if (err) { throw err };
@@ -243,6 +246,7 @@ function updateRole() {
     })
 };
 
+//Function to make sure the user wants to exit the application
 const RequestingExit = () =>
     inquirer.prompt([
         {
