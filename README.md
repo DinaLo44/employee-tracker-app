@@ -11,7 +11,7 @@ With this application, the user will be able to access the organization's databa
 # Technologies:
 The technologies used to build this application are MySQL, JavaScript, Node.js and the packages mysql2, console.table and inquirer.
 
-# Screenshot of Start Menu:
+# Screenshot of the Start Menu:
 ![screnshot1.png](https://github.com/DinaLo44/employee-tracker-app/blob/main/screenshot/screenshot1.PNG)
 
 # Demo video link:
