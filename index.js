@@ -3,7 +3,7 @@ const mysql = require('mysql2');
 const consoleTable = require('console.table');
 const fs = require('fs');
 const dbConnection = require('./db/connection');
-const { exit } = require('process');
+
 
 function showMenu() {
     inquirer.prompt([
@@ -42,8 +42,6 @@ function showMenu() {
                 break;
             default:
                 console.log('Please select an action to execute');
-            // console.log('You have successfully exited the application')
-            process.exit();
 
         }
     });
@@ -234,7 +232,7 @@ function updateRole() {
             let selectedLastName = response.name;
             dbConnection.query('UPDATE employee SET ? WHERE last_name = ?', [
                 {
-                    role_id: response.title
+                    role_id: response.roleTitle
                 }, 
                 selectedLastName
             ],
