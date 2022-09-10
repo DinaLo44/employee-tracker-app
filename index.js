@@ -3,12 +3,7 @@ const mysql = require('mysql2');
 const consoleTable = require('console.table');
 const fs = require('fs');
 const dbConnection = require('./db/connection');
-
-// class dataBase {
-//     constructor(dbConnection) {
-//         this.dbConnection = dbConnection;
-//     }
-// }
+const { exit } = require('process');
 
 function showMenu() {
     inquirer.prompt([
@@ -16,7 +11,7 @@ function showMenu() {
             type: 'list',
             message: 'What action would you like to execute?',
             choices: ['View all departments', 'View all roles', 'View all employees',
-                'Add a department', 'Add a role', 'Add an employee', 'Update an employee role'],
+                'Add a department', 'Add a role', 'Add an employee', 'Update an employee role', 'Exit'],
             name: 'menu'
         }
     ]).then(userSelection => {
@@ -42,12 +37,17 @@ function showMenu() {
             case 'Update an employee role':
                 updateRole();
                 break;
+            case 'Exit':
+                RequestingExit()
+                break;
             default:
-                console.log('Exit')
+                console.log('Please select an action to execute');
+            // console.log('You have successfully exited the application')
+            // process.exit();
 
         }
-    })
-};
+    });
+}
 
 function viewDepartments() {
     dbConnection.query('SELECT * from department ORDER BY id ASC', (err, results) => {
@@ -71,7 +71,6 @@ function viewRoles() {
     })
 };
 
-//Missing job titles, departments? , and managers the employees report to
 function viewEmployees() {
     dbConnection.query(
         `SELECT employee.id AS ID, employee.first_name AS First, employee.last_name AS Last, 
@@ -96,23 +95,24 @@ function addDepartment() {
         }
     ]).then(function (response) {
         dbConnection.query('INSERT INTO department VALUES (DEFAULT, ?)', [response.department],
-            (err, results) => {
+            (err) => {
                 if (err) {
                     throw err
                 } else {
-                    console.table(results)
+                    console.log('Department added successfully')
+
                 }
                 showMenu()
             })
-    });
-}
+    })
+};
 
 function addRole() {
     inquirer.prompt([
         {
             type: 'input',
-            message: 'What is the role title you would like to add?',
-            name: 'role'
+            message: 'What is the title you would like to add?',
+            name: 'title'
         },
         {
             type: 'input',
@@ -139,20 +139,20 @@ function addRole() {
     ]).then(function (response) {
         dbConnection.query('INSERT INTO role SET ?',
             {
-                title: response.role,
+                title: response.title,
                 salary: response.salary,
                 department_id: response.departmentId
             },
-            (err, results) => {
+            (err) => {
                 if (err) { throw err }
                 else {
-                    console.table(results)
+                    console.log('Role added successfully')
+                    // console.table(results)
                 }
                 showMenu()
-            })
+            });
     });
-
-}
+};
 function addEmployee() {
     dbConnection.query('SELECT * FROM role', function (err, results) {
         if (err) throw err;
@@ -168,27 +168,24 @@ function addEmployee() {
                 name: 'lastName'
             },
             {
-                type: 'rawlist',
+                type: 'list',
                 message: 'What is the role id for this employee?',
                 name: 'role',
                 choices: function () {
-                    let addedEmployee = [];
-                    for (let i = 0; results.length; i++) {
-                        addedEmployee.push(results[i].title)
+                    let addedEmployeeRole = [];
+                    for (const role of results) {
+                        addedEmployeeRole.push(role.id)
                     }
-                    return addedEmployee;
+
+                    return addedEmployeeRole;
                 }
             },
             {
-                type: 'number',
+                type: 'list',
                 message: 'What is the manager id?',
                 name: 'manager',
-                validate: function (value) {
-                    if (isNaN(value) === false) {
-                        return true;
-                    }
-                    return false;
-                }
+                choices: [1, 3, 5, 7, 9]
+
             }
         ]).then(function (response) {
             dbConnection.query('INSERT INTO employee SET ?', {
@@ -196,31 +193,71 @@ function addEmployee() {
                 last_name: response.lastName,
                 role_id: response.role,
                 manager_id: response.manager
-            }
+            },
+
+                console.log('Employee added successfully'),
+
+                showMenu()
             )
-            console.log("Employee information added successfully")
-               
-            showMenu()
+        })
     })
-})}
- // (err, results) => {
-                //     if (err) { throw err }
-                //     else {
-                //         console.table(results)
-                //     }
-                //     showMenu()
-                // }
+};
+function updateRole() {
+    dbConnection.query('SELECT * FROM employee', (err, results) => {
+        if (err) { throw err };
+        inquirer.prompt([
+            {
+                type: 'list',
+                message: 'Choose the employee you would like to update?',
+                name: 'name',
+                choices: function () {
+                    let employeeRole = [];
+                    for (const lastName of results) {
+                        employeeRole.push(lastName.last_name);
+                    }
+                    return employeeRole;
+                }
+            },
+            {
+                type: 'list',
+                message: 'What is the id number you would like to assign to the new role of the selected employee?',
+                name: 'roleTitle',
+                choices: function () {
+                    let roleIdArray = []
+                    for (const role of results) {
+                        roleIdArray.push(role.role_id);
+                    }
+                    return roleIdArray;
+                }
+            },
+        ]).then(function (response) {
+            let selectedLastName = response.name;
+            dbConnection.query('UPDATE employee SET ? WHERE last_name = ?', [
+                {
+                    role_id: response.title
+                }, 
+                selectedLastName
+            ],
+                console.log('Update successfully completed'),
+                showMenu()
+            )
+        })
+    })
+};
 
-
-
-// function updateRole(updatedRole) {
-//     dbConnection.query('UPDATE role SET role_id = ? WHERE id = ?', (err, results) => {
-//         if (err) { throw err }
-//         else {
-//             console.table(results)
-//         }
-//         showMenu()
-//     })
-// };
+const RequestingExit = () =>
+    inquirer.prompt([
+        {
+            name: "exiting",
+            type: "confirm",
+            message: "Are you sure you want to exit the application?",
+        },
+    ]).then((response) => {
+            if (response.exiting) {
+                console.log('You have successfully exited the application')
+            } else {
+                return showMenu();
+            }
+        });
 
 showMenu()
