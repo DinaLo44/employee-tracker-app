@@ -180,9 +180,9 @@ function addEmployee() {
             },
             {
                 type: 'list',
-                message: 'What is the manager id?',
+                message: "What is the manager's id for this employee?",
                 name: 'manager',
-                choices: [1, 3, 5, 7, 9]
+                choices: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
             }
         ]).then(function (response) {
