@@ -11,6 +11,9 @@ With this application, the user will be able to access the organization's databa
 # Technologies:
 The technologies used to build this application are MySQL, JavaScript, Node.js and the packages mysql2, console.table and inquirer.
 
+# Screenshot:
+![screnshot1.png]()
+
 # Demo video link:
 https://drive.google.com/file/d/16ixxbjJ4CKW4I_v10Iu1b-sKQlMZDIYZ/view
 
