@@ -43,7 +43,7 @@ function showMenu() {
             default:
                 console.log('Please select an action to execute');
             // console.log('You have successfully exited the application')
-            // process.exit();
+            process.exit();
 
         }
     });
@@ -147,7 +147,7 @@ function addRole() {
                 if (err) { throw err }
                 else {
                     console.log('Role added successfully')
-                    // console.table(results)
+                    
                 }
                 showMenu()
             });
